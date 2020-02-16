@@ -11,12 +11,12 @@ import aima.core.search.csp.CspSolver;
 import aima.core.search.csp.FlexibleBacktrackingSolver;
 import aima.core.search.csp.MinConflictsSolver;
 import aima.core.search.csp.Variable;
-import aima.core.search.csp.examples.MapCSP;
+import aima.core.search.csp.examples.AlocCSP;
 
 public class Main {
 
 	public static void main(String[] args) {
-		CSP<Variable, List<String>> csp = new MapCSP();
+		CSP<Variable, List<String>> csp = new AlocCSP();
 		CspListener.StepCounter<Variable, List<String>> stepCounter = new CspListener.StepCounter<>();
 		CspSolver<Variable, List<String>> solver;
 		Optional<Assignment<Variable, List<String>>> solution;

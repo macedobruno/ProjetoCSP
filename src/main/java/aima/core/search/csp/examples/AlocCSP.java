@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MapCSP extends CSP<Variable, List<String>> {
+public class AlocCSP extends CSP<Variable, List<String>> {
 	public static final Variable IA1 = new Variable("IA1"); 	//	INTELIGENCIA ARTIFICIAL 4cr
 	public static final Variable IA2 = new Variable("IA2"); 		
 	public static final Variable ESII1 = new Variable("ESII1"); // ENGENHARIA DE SOFTWARE II 4cr
@@ -26,6 +26,18 @@ public class MapCSP extends CSP<Variable, List<String>> {
 						  "SEG21","TER21","QUA21","QUI21","SEX21"));
 	
 	public List<String> profs = new ArrayList<>(Arrays.asList("Prof1","Prof2","Prof3","Prof4"));
+
+	public AlocCSP() {
+		super(variaveis);
+
+		Domain<List<String>> values = new Domain<>(createValues(aulas, profs));
+		for (Variable var : getVariables())
+			setDomain(var, values);
+
+		addAll(variaveis, 0);
+//		addConstraint(new AtribHorarioConstraint<>(ESII1, Arrays.asList("QUI17","")));
+//		addConstraint(new AtribHorarioConstraint<>(ESII2, Arrays.asList("QUI19","")));
+	}
 	
 	private List<List<String>> createValues(List<String> aulas, List<String> profs) {
 		
@@ -37,18 +49,6 @@ public class MapCSP extends CSP<Variable, List<String>> {
 			}
 		}
 		return values;
-	}
-
-	public MapCSP() {
-		super(variaveis);
-
-		Domain<List<String>> values = new Domain<>(createValues(aulas, profs));
-		for (Variable var : getVariables())
-			setDomain(var, values);
-
-		addAll(variaveis, 0);
-//		addConstraint(new AtribHorarioConstraint<>(ESII1, Arrays.asList("QUI17","")));
-//		addConstraint(new AtribHorarioConstraint<>(ESII2, Arrays.asList("QUI19","")));
 	}
 	
 	private void addAll(List<Variable> var, int j) {
