@@ -43,7 +43,7 @@ import aima.core.search.framework.QueueFactory;
  * 
  * @author Ruediger Lunde
  */
-public class AC3Strategy<VAR extends Variable, VAL> implements InferenceStrategy<VAR, VAL> {
+public class AC3Strategy<VAR extends Variable, VAL> implements InferenceStrategy<VAR, List<String>> {
 
 	/**
 	 * Makes a CSP consisting of binary constraints arc-consistent.
@@ -51,10 +51,10 @@ public class AC3Strategy<VAR extends Variable, VAL> implements InferenceStrategy
 	 * @return An object which indicates success/failure and contains data to
 	 *         undo the operation.
 	 */
-	public InferenceLog<VAR, VAL> apply(CSP<VAR, VAL> csp) {
+	public InferenceLog<VAR, List<String>> apply(CSP<VAR, List<String>> csp) {
 		Queue<VAR> queue = QueueFactory.createFifoQueueNoDuplicates();
 		queue.addAll(csp.getVariables());
-		DomainLog<VAR, VAL> log = new DomainLog<>();
+		DomainLog<VAR, List<String>> log = new DomainLog<>();
 		reduceDomains(queue, csp, log);
 		return log.compactify();
 	}
@@ -67,11 +67,11 @@ public class AC3Strategy<VAR extends Variable, VAL> implements InferenceStrategy
 	 * @return An object which indicates success/failure and contains data to
 	 *         undo the operation.
 	 */
-	public InferenceLog<VAR, VAL> apply(CSP<VAR, VAL> csp, Assignment<VAR, VAL> assignment, VAR var) {
-		Domain<VAL> domain = csp.getDomain(var);
-		VAL value = assignment.getValue(var);
+	public InferenceLog<VAR, List<String>> apply(CSP<VAR, List<String>> csp, Assignment<VAR, List<String>> assignment, VAR var) {
+		Domain<List<String>> domain = csp.getDomain(var);
+		List<String> value = assignment.getValue(var);
 		assert domain.contains(value);
-		DomainLog<VAR, VAL> log = new DomainLog<>();
+		DomainLog<VAR, List<String>> log = new DomainLog<>();
 		if (domain.size() > 1) {
 			Queue<VAR> queue = QueueFactory.createFifoQueue();
 			queue.add(var);
@@ -86,10 +86,10 @@ public class AC3Strategy<VAR extends Variable, VAL> implements InferenceStrategy
 	 * For efficiency reasons the queue manages updated variables vj whereas the original AC3
 	 * manages neighbor arcs (vi, vj). Constraints which are not binary are ignored.
 	 */
-	private void reduceDomains(Queue<VAR> queue, CSP<VAR, VAL> csp, DomainLog<VAR, VAL> log) {
+	private void reduceDomains(Queue<VAR> queue, CSP<VAR, List<String>> csp, DomainLog<VAR, List<String>> log) {
 		while (!queue.isEmpty()) {
 			VAR var = queue.remove();
-			for (Constraint<VAR, VAL> constraint : csp.getConstraints(var)) {
+			for (Constraint<VAR, List<String>> constraint : csp.getConstraints(var)) {
 				VAR neighbor = csp.getNeighbor(var, constraint);
 				if (neighbor != null && revise(neighbor, var, constraint, csp, log)) {
 					if (csp.getDomain(neighbor).isEmpty()) {
@@ -106,14 +106,14 @@ public class AC3Strategy<VAR extends Variable, VAL> implements InferenceStrategy
 	 * Establishes arc-consistency for (xi, xj).
 	 * @return value true if the domain of xi was reduced.
 	 */
-	private boolean revise(VAR xi, VAR xj, Constraint<VAR, VAL> constraint,
-			CSP<VAR, VAL> csp, DomainLog<VAR, VAL> log) {
-		Domain<VAL> currDomain = csp.getDomain(xi);
-		List<VAL> newValues = new ArrayList<>(currDomain.size());
-		Assignment<VAR, VAL> assignment = new Assignment<>();
-		for (VAL vi : currDomain) {
+	private boolean revise(VAR xi, VAR xj, Constraint<VAR, List<String>> constraint,
+			CSP<VAR, List<String>> csp, DomainLog<VAR, List<String>> log) {
+		Domain<List<String>> currDomain = csp.getDomain(xi);
+		List<List<String>> newValues = new ArrayList<>(currDomain.size());
+		Assignment<VAR, List<String>> assignment = new Assignment<>();
+		for (List<String> vi : currDomain) {
 			assignment.add(xi, vi);
-			for (VAL vj : csp.getDomain(xj)) {
+			for (List<String> vj : csp.getDomain(xj)) {
 				assignment.add(xj, vj);
 				if (constraint.isSatisfiedWith(assignment)) {
 					newValues.add(vi);

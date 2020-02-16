@@ -1,5 +1,7 @@
 package aima.core.search.csp.inference;
 
+import java.util.List;
+
 import aima.core.search.csp.Assignment;
 import aima.core.search.csp.CSP;
 import aima.core.search.csp.Constraint;
@@ -9,11 +11,11 @@ import aima.core.search.csp.Variable;
  * Implements forward checking. Constraints which are not binary are ignored here.
  * @author Ruediger Lunde
  */
-public class ForwardCheckingStrategy<VAR extends Variable, VAL> implements InferenceStrategy<VAR, VAL> {
+public class ForwardCheckingStrategy<VAR extends Variable, VAL> implements InferenceStrategy<VAR, List<String>> {
 
     /** The CSP is not changed at the beginning. */
     @Override
-    public InferenceLog<VAR, VAL> apply(CSP csp) {
+    public InferenceLog<VAR, List<String>> apply(CSP<VAR, List<String>> csp) {
         return InferenceLog.emptyLog();
     }
 
@@ -24,9 +26,9 @@ public class ForwardCheckingStrategy<VAR extends Variable, VAL> implements Infer
      * assignment for <code>var</code>.
      */
     @Override
-    public InferenceLog<VAR, VAL> apply(CSP<VAR, VAL> csp, Assignment<VAR, VAL> assignment, VAR var) {
-        DomainLog<VAR, VAL> log = new DomainLog<>();
-        for (Constraint<VAR, VAL> constraint : csp.getConstraints(var)) {
+    public InferenceLog<VAR, List<String>> apply(CSP<VAR, List<String>> csp, Assignment<VAR, List<String>> assignment, VAR var) {
+        DomainLog<VAR, List<String>> log = new DomainLog<>();
+        for (Constraint<VAR, List<String>> constraint : csp.getConstraints(var)) {
             VAR neighbor = csp.getNeighbor(var, constraint);
             if (neighbor != null && !assignment.contains(neighbor)) {
                 if (revise(neighbor, constraint, assignment, csp, log)) {
@@ -45,11 +47,11 @@ public class ForwardCheckingStrategy<VAR extends Variable, VAL> implements Infer
      * <code>constraint</code> and <code>assignment</code>. Modifies the domain log accordingly so
      * that all changes can be undone later on.
      */
-    private boolean revise(VAR var, Constraint<VAR, VAL> constraint, Assignment<VAR, VAL> assignment,
-                           CSP<VAR, VAL> csp, DomainLog<VAR, VAL> log) {
+    private boolean revise(VAR var, Constraint<VAR, List<String>> constraint, Assignment<VAR, List<String>> assignment,
+                           CSP<VAR, List<String>> csp, DomainLog<VAR, List<String>> log) {
 
         boolean revised = false;
-        for (VAL value : csp.getDomain(var)) {
+        for (List<String> value : csp.getDomain(var)) {
             assignment.add(var, value);
             if (!constraint.isSatisfiedWith(assignment)) {
                 log.storeDomainFor(var, csp.getDomain(var));

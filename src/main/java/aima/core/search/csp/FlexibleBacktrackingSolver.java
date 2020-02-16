@@ -16,17 +16,17 @@ import aima.core.search.csp.inference.*;
  *
  * @author Ruediger Lunde
  */
-public class FlexibleBacktrackingSolver<VAR extends Variable, VAL> extends AbstractBacktrackingSolver<VAR, VAL> {
+public class FlexibleBacktrackingSolver<VAR extends Variable, VAL> extends AbstractBacktrackingSolver<VAR, List<String>> {
 
-    private CspHeuristics.VariableSelectionStrategy<VAR, VAL> varSelectionStrategy;
-    private CspHeuristics.ValueOrderingStrategy<VAR, VAL> valOrderingStrategy;
-    private InferenceStrategy<VAR, VAL> inferenceStrategy;
+    private CspHeuristics.VariableSelectionStrategy<VAR, List<String>> varSelectionStrategy;
+    private CspHeuristics.ValueOrderingStrategy<VAR, List<String>> valOrderingStrategy;
+    private InferenceStrategy<VAR, List<String>> inferenceStrategy;
 
 
     /**
      * Selects the algorithm for SELECT-UNASSIGNED-VARIABLE. Uses the fluent interface design pattern.
      */
-    public FlexibleBacktrackingSolver<VAR, VAL> set(CspHeuristics.VariableSelectionStrategy<VAR, VAL> varStrategy) {
+    public FlexibleBacktrackingSolver<VAR, VAL> set(CspHeuristics.VariableSelectionStrategy<VAR, List<String>> varStrategy) {
         varSelectionStrategy = varStrategy;
         return this;
     }
@@ -34,7 +34,7 @@ public class FlexibleBacktrackingSolver<VAR extends Variable, VAL> extends Abstr
     /**
      * Selects the algorithm for ORDER-DOMAIN-VALUES. Uses the fluent interface design pattern.
      */
-    public FlexibleBacktrackingSolver<VAR, VAL> set(CspHeuristics.ValueOrderingStrategy<VAR, VAL> valStrategy) {
+    public FlexibleBacktrackingSolver<VAR, VAL> set(CspHeuristics.ValueOrderingStrategy<VAR, List<String>> valStrategy) {
         valOrderingStrategy = valStrategy;
         return this;
     }
@@ -42,7 +42,7 @@ public class FlexibleBacktrackingSolver<VAR extends Variable, VAL> extends Abstr
     /**
      * Selects the algorithm for INFERENCE. Uses the fluent interface design pattern.
      */
-    public FlexibleBacktrackingSolver<VAR, VAL> set(InferenceStrategy<VAR, VAL> iStrategy) {
+    public FlexibleBacktrackingSolver<VAR, VAL> set(InferenceStrategy<VAR, List<String>> iStrategy) {
         inferenceStrategy = iStrategy;
         return this;
     }
@@ -58,7 +58,7 @@ public class FlexibleBacktrackingSolver<VAR extends Variable, VAL> extends Abstr
      * Applies an initial inference step and then calls the super class implementation.
      */
     @Override
-    public Optional<Assignment<VAR, VAL>> solve(CSP<VAR, VAL> csp) {
+    public Optional<Assignment<VAR, List<String>>> solve(CSP<VAR, List<String>> csp) {
         if (inferenceStrategy != null) {
             csp = csp.copyDomains(); // do not change the original CSP!
             InferenceLog log = inferenceStrategy.apply(csp);
@@ -75,7 +75,7 @@ public class FlexibleBacktrackingSolver<VAR extends Variable, VAL> extends Abstr
      * Primitive operation, selecting a not yet assigned variable.
      */
     @Override
-    protected VAR selectUnassignedVariable(CSP<VAR, VAL> csp, Assignment<VAR, VAL> assignment) {
+    protected VAR selectUnassignedVariable(CSP<VAR, List<String>> csp, Assignment<VAR, List<String>> assignment) {
         List<VAR> vars = csp.getVariables().stream().filter(v -> !assignment.contains(v)).
                 collect(Collectors.toList());
         if (varSelectionStrategy != null)
@@ -87,7 +87,7 @@ public class FlexibleBacktrackingSolver<VAR extends Variable, VAL> extends Abstr
      * Primitive operation, ordering the domain values of the specified variable.
      */
     @Override
-    protected Iterable<VAL> orderDomainValues(CSP<VAR, VAL> csp, Assignment<VAR, VAL> assignment, VAR var) {
+    protected Iterable<List<String>> orderDomainValues(CSP<VAR, List<String>> csp, Assignment<VAR, List<String>> assignment, VAR var) {
         return (valOrderingStrategy != null) ? valOrderingStrategy.apply(csp, assignment, var) : csp.getDomain(var);
     }
 
@@ -101,7 +101,7 @@ public class FlexibleBacktrackingSolver<VAR extends Variable, VAL> extends Abstr
      * (3) how to restore the original CSP.
      */
     @Override
-    protected InferenceLog<VAR, VAL> inference(CSP<VAR, VAL> csp, Assignment<VAR, VAL> assignment, VAR var) {
+    protected InferenceLog<VAR, List<String>> inference(CSP<VAR, List<String>> csp, Assignment<VAR, List<String>> assignment, VAR var) {
         return (inferenceStrategy != null) ? inferenceStrategy.apply(csp, assignment, var) : InferenceLog.emptyLog();
     }
 }

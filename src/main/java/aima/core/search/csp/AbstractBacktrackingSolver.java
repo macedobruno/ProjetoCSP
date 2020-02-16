@@ -3,6 +3,7 @@ package aima.core.search.csp;
 import aima.core.search.csp.inference.InferenceLog;
 import aima.core.util.Tasks;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -46,11 +47,11 @@ import java.util.Optional;
  *
  * @author Ruediger Lunde
  */
-public abstract class AbstractBacktrackingSolver<VAR extends Variable, VAL> extends CspSolver<VAR, VAL> {
+public abstract class AbstractBacktrackingSolver<VAR extends Variable, VAL> extends CspSolver<VAR, List<String>> {
 
     /** Applies a recursive backtracking search to solve the CSP. */
-    public Optional<Assignment<VAR, VAL>> solve(CSP<VAR, VAL> csp) {
-        Assignment<VAR, VAL> result = backtrack(csp, new Assignment<>());
+    public Optional<Assignment<VAR, List<String>>> solve(CSP<VAR, List<String>> csp) {
+        Assignment<VAR, List<String>> result = backtrack(csp, new Assignment<>());
         return result != null ? Optional.of(result) : Optional.empty();
     }
 
@@ -59,17 +60,17 @@ public abstract class AbstractBacktrackingSolver<VAR extends Variable, VAL> exte
      * primitive operations below.
      * @return An assignment (possibly incomplete if task was cancelled) or null if no solution was found.
      */
-    private Assignment<VAR, VAL> backtrack(CSP<VAR, VAL> csp, Assignment<VAR, VAL> assignment) {
-        Assignment<VAR, VAL> result = null;
+    private Assignment<VAR, List<String>> backtrack(CSP<VAR, List<String>> csp, Assignment<VAR, List<String>> assignment) {
+        Assignment<VAR, List<String>> result = null;
         if (assignment.isComplete(csp.getVariables()) || Tasks.currIsCancelled()) {
             result = assignment;
         } else {
             VAR var = selectUnassignedVariable(csp, assignment);
-            for (VAL value : orderDomainValues(csp, assignment, var)) {
+            for (List<String> value : orderDomainValues(csp, assignment, var)) {
                 assignment.add(var, value);
                 fireStateChanged(csp, assignment, var);
                 if (assignment.isConsistent(csp.getConstraints(var))) {
-                    InferenceLog<VAR, VAL> log = inference(csp, assignment, var);
+                    InferenceLog<VAR, List<String>> log = inference(csp, assignment, var);
                     if (!log.isEmpty())
                         fireStateChanged(csp, null, null);
                     if (!log.inconsistencyFound()) {
@@ -88,12 +89,12 @@ public abstract class AbstractBacktrackingSolver<VAR extends Variable, VAL> exte
     /**
      * Primitive operation, selecting a not yet assigned variable.
      */
-    protected abstract VAR selectUnassignedVariable(CSP<VAR, VAL> csp, Assignment<VAR, VAL> assignment);
+    protected abstract VAR selectUnassignedVariable(CSP<VAR, List<String>> csp, Assignment<VAR, List<String>> assignment);
 
     /**
      * Primitive operation, ordering the domain values of the specified variable.
      */
-    protected abstract Iterable<VAL> orderDomainValues(CSP<VAR, VAL> csp, Assignment<VAR, VAL> assignment, VAR var);
+    protected abstract Iterable<List<String>> orderDomainValues(CSP<VAR, List<String>> csp, Assignment<VAR, List<String>> assignment, VAR var);
 
     /**
      * Primitive operation, which tries to optimize the CSP representation with respect to a new assignment.
@@ -104,5 +105,5 @@ public abstract class AbstractBacktrackingSolver<VAR extends Variable, VAL> exte
      * (2) possibly inferred empty domains, and
      * (3) how to restore the original CSP.
      */
-    protected abstract InferenceLog<VAR, VAL> inference(CSP<VAR, VAL> csp, Assignment<VAR, VAL> assignment, VAR var);
+    protected abstract InferenceLog<VAR, List<String>> inference(CSP<VAR, List<String>> csp, Assignment<VAR, List<String>> assignment, VAR var);
 }

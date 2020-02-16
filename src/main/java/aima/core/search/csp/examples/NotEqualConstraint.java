@@ -12,7 +12,7 @@ import aima.core.search.csp.Variable;
  * 
  * @author Ruediger Lunde
  */
-public class NotEqualConstraint<VAR extends Variable, VAL> implements Constraint<VAR, VAL> {
+public class NotEqualConstraint<VAR extends Variable, VAL> implements Constraint<VAR, List<String>> {
 
 	private VAR var1;
 	private VAR var2;
@@ -32,8 +32,10 @@ public class NotEqualConstraint<VAR extends Variable, VAL> implements Constraint
 	}
 
 	@Override
-	public boolean isSatisfiedWith(Assignment<VAR, VAL> assignment) {
-		VAL value1 = assignment.getValue(var1);
-		return value1 == null || !value1.equals(assignment.getValue(var2));
+	public boolean isSatisfiedWith(Assignment<VAR, List<String>> assignment) {
+		List<String> value1 = assignment.getValue(var1);
+		List<String> value2 = assignment.getValue(var2);
+		if(value1 == null || value2 == null) return true;
+		return !value1.get(0).equals(value2.get(0));
 	}
 }

@@ -31,12 +31,12 @@ import java.util.*;
  * given the rest of the current assignment.
  *
  * @param <VAR> Type which is used to represent variables
- * @param <VAL> Type which is used to represent the values in the domains
+ * @param <List<String>> Type which is used to represent the values in the domains
  *
  * @author Ruediger Lunde
  * @author Mike Stampone
  */
-public class MinConflictsSolver<VAR extends Variable, VAL> extends CspSolver<VAR, VAL> {
+public class MinConflictsSolver<VAR extends Variable, VAL> extends CspSolver<VAR, List<String>> {
 	private int maxSteps;
 
 	/**
@@ -50,8 +50,8 @@ public class MinConflictsSolver<VAR extends Variable, VAL> extends CspSolver<VAR
 		this.maxSteps = maxSteps;
 	}
 
-	public Optional<Assignment<VAR, VAL>> solve(CSP<VAR, VAL> csp) {
-		Assignment<VAR, VAL> current = generateRandomAssignment(csp);
+	public Optional<Assignment<VAR, List<String>>> solve(CSP<VAR, List<String>> csp) {
+		Assignment<VAR, List<String>> current = generateRandomAssignment(csp);
 		fireStateChanged(csp, current, null);
 		for (int i = 0; i < maxSteps && !Tasks.currIsCancelled(); i++) {
 			if (current.isSolution(csp)) {
@@ -59,7 +59,7 @@ public class MinConflictsSolver<VAR extends Variable, VAL> extends CspSolver<VAR
 			} else {
 				Set<VAR> vars = getConflictedVariables(current, csp);
 				VAR var = Util.selectRandomlyFromSet(vars);
-				VAL value = getMinConflictValueFor(var, current, csp);
+				List<String> value = getMinConflictValueFor(var, current, csp);
 				current.add(var, value);
 				fireStateChanged(csp, current, var);
 			}
@@ -67,28 +67,28 @@ public class MinConflictsSolver<VAR extends Variable, VAL> extends CspSolver<VAR
 		return Optional.empty();
 	}
 
-	private Assignment<VAR, VAL> generateRandomAssignment(CSP<VAR, VAL> csp) {
-		Assignment<VAR, VAL> result = new Assignment<>();
+	private Assignment<VAR, List<String>> generateRandomAssignment(CSP<VAR, List<String>> csp) {
+		Assignment<VAR, List<String>> result = new Assignment<>();
 		for (VAR var : csp.getVariables()) {
-			VAL randomValue = Util.selectRandomlyFromList(csp.getDomain(var).asList());
+			List<String> randomValue = Util.selectRandomlyFromList(csp.getDomain(var).asList());
 			result.add(var, randomValue);
 		}
 		return result;
 	}
 
-	private Set<VAR> getConflictedVariables(Assignment<VAR, VAL> assignment, CSP<VAR, VAL> csp) {
+	private Set<VAR> getConflictedVariables(Assignment<VAR, List<String>> assignment, CSP<VAR, List<String>> csp) {
 		Set<VAR> result = new LinkedHashSet<>();
 		csp.getConstraints().stream().filter(constraint -> !constraint.isSatisfiedWith(assignment)).
 				map(Constraint::getScope).forEach(result::addAll);
 		return result;
 	}
 
-	private VAL getMinConflictValueFor(VAR var, Assignment<VAR, VAL> assignment, CSP<VAR, VAL> csp) {
-		List<Constraint<VAR, VAL>> constraints = csp.getConstraints(var);
-		Assignment<VAR, VAL> testAssignment = assignment.clone();
+	private List<String> getMinConflictValueFor(VAR var, Assignment<VAR, List<String>> assignment, CSP<VAR, List<String>> csp) {
+		List<Constraint<VAR, List<String>>> constraints = csp.getConstraints(var);
+		Assignment<VAR, List<String>> testAssignment = assignment.clone();
 		int minConflict = Integer.MAX_VALUE;
-		List<VAL> resultCandidates = new ArrayList<>();
-		for (VAL value : csp.getDomain(var)) {
+		List<List<String>> resultCandidates = new ArrayList<>();
+		for (List<String> value : csp.getDomain(var)) {
 			testAssignment.add(var, value);
 			int currConflict = countConflicts(testAssignment, constraints);
 			if (currConflict <= minConflict) {
@@ -102,7 +102,7 @@ public class MinConflictsSolver<VAR extends Variable, VAL> extends CspSolver<VAR
 		 return (!resultCandidates.isEmpty()) ? Util.selectRandomlyFromList(resultCandidates) : null;
 	}
 
-	private int countConflicts(Assignment<VAR, VAL> assignment, List<Constraint<VAR, VAL>> constraints) {
+	private int countConflicts(Assignment<VAR, List<String>> assignment, List<Constraint<VAR, List<String>>> constraints) {
 		return (int) constraints.stream().filter(constraint -> !constraint.isSatisfiedWith(assignment)).count();
 	}
 }
