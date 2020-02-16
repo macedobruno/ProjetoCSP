@@ -15,10 +15,10 @@ import aima.core.search.csp.Variable;
 public class HoarioFixoConstraint<VAR extends Variable, VAL> implements Constraint<VAR, List<String>> {
 
 	private VAR var;
-	private List<String> val;
+	private String val;
 	private List<VAR> scope;
 
-	public HoarioFixoConstraint(VAR var, List<String> val) {
+	public HoarioFixoConstraint(VAR var, String val) {
 		this.var = var;
 		this.val = val;
 		scope = new ArrayList<>(2);
@@ -33,6 +33,6 @@ public class HoarioFixoConstraint<VAR extends Variable, VAL> implements Constrai
 	@Override
 	public boolean isSatisfiedWith(Assignment<VAR, List<String>> assignment) {
 		List<String> value = assignment.getValue(var);
-		return value.get(0) == val.get(0);
+		return value.get(0) == val;
 	}
 }
