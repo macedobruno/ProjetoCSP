@@ -71,15 +71,47 @@ public class Assignment<VAR extends Variable, VAL> implements Cloneable {
         return result;
     }
 
+//    @Override
+//    public String toString() {
+//        StringBuilder result = new StringBuilder("{");
+//        for (Map.Entry<VAR, VAL> entry : variableToValueMap.entrySet()) {
+//            if (result.length() > 1)
+//                result.append(", ");
+//            result.append(entry.getKey()).append("=").append(entry.getValue());
+//        }
+//        result.append("}");
+//        return result.toString();
+//    }
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder("{");
-        for (Map.Entry<VAR, VAL> entry : variableToValueMap.entrySet()) {
-            if (result.length() > 1)
-                result.append(", ");
-            result.append(entry.getKey()).append("=").append(entry.getValue());
-        }
-        result.append("}");
-        return result.toString();
+    	List<String> semana = new ArrayList<>(
+    			Arrays.asList("SEG17","TER17","QUA17","QUI17","SEX17",
+    						  "SEG19","TER19","QUA19","QUI19","SEX19",
+    						  "SEG21","TER21","QUA21","QUI21","SEX21"));
+    	Map<String, String> map = new HashMap<>();
+    	StringBuilder result = new StringBuilder("");
+    	for (Map.Entry<VAR, VAL> entry : variableToValueMap.entrySet()) {
+    		map.put(entry.getKey().toString(),entry.getValue().toString());
+    	}
+    	int cont = 0;
+    	for(String aula : semana) {
+    		cont++;
+    			if(map.containsValue(aula)) {
+    				result.append(aula).append("-").append(getAula(map, aula)).append("\t");
+    			}else {
+    				result.append(aula).append("-").append(" ||").append("\t");
+    			}
+			if(cont == 5 || cont == 10 || cont == 20) {
+				result.append("\n");
+			}
+    	}
+    	return result.toString();
+    }
+    
+    public String getAula(Map<String,String> m, String aula) {
+        for (String s : m.keySet())
+                if (m.get(s).equals(aula))
+                        return s;
+        return null;
     }
 }
