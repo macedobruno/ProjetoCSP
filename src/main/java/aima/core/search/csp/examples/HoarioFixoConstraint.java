@@ -12,13 +12,13 @@ import aima.core.search.csp.Variable;
  * 
  * @author Ruediger Lunde
  */
-public class AtribHorarioConstraint<VAR extends Variable, VAL> implements Constraint<VAR, List<String>> {
+public class HoarioFixoConstraint<VAR extends Variable, VAL> implements Constraint<VAR, List<String>> {
 
 	private VAR var;
 	private List<String> val;
 	private List<VAR> scope;
 
-	public AtribHorarioConstraint(VAR var, List<String> val) {
+	public HoarioFixoConstraint(VAR var, List<String> val) {
 		this.var = var;
 		this.val = val;
 		scope = new ArrayList<>(2);
@@ -33,6 +33,6 @@ public class AtribHorarioConstraint<VAR extends Variable, VAL> implements Constr
 	@Override
 	public boolean isSatisfiedWith(Assignment<VAR, List<String>> assignment) {
 		List<String> value = assignment.getValue(var);
-		return value == val;
+		return value.get(0) == val.get(0);
 	}
 }

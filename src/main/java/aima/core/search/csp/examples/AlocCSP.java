@@ -35,8 +35,8 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 			setDomain(var, values);
 
 		addAll(variaveis, 0);
-//		addConstraint(new AtribHorarioConstraint<>(ESII1, Arrays.asList("QUI17","")));
-//		addConstraint(new AtribHorarioConstraint<>(ESII2, Arrays.asList("QUI19","")));
+		addConstraint(new HoarioFixoConstraint<>(ESII1, Arrays.asList("QUI17","")));
+		addConstraint(new HoarioFixoConstraint<>(ESII2, Arrays.asList("QUI19","")));
 	}
 	
 	private List<List<String>> createValues(List<String> aulas, List<String> profs) {
