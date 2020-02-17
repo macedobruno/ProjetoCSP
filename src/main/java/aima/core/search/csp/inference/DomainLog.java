@@ -19,8 +19,8 @@ import aima.core.util.datastructure.Pair;
  * @author Ruediger Lunde
  * 
  */
-public class DomainLog<VAR extends Variable, VAL> implements InferenceLog<VAR, List<String>> {
-	private List<Pair<VAR, Domain<List<String>>>> savedDomains;
+public class DomainLog<VAR extends Variable, VAL> implements InferenceLog<VAR, VAL> {
+	private List<Pair<VAR, Domain<VAL>>> savedDomains;
 	private HashSet<VAR> affectedVariables;
 	private boolean emptyDomainObserved;
 
@@ -38,7 +38,7 @@ public class DomainLog<VAR extends Variable, VAL> implements InferenceLog<VAR, L
 	 * Stores the specified domain for the specified variable if a domain has
 	 * not yet been stored for the variable.
 	 */
-	public void storeDomainFor(VAR var, Domain<List<String>> domain) {
+	public void storeDomainFor(VAR var, Domain<VAL> domain) {
 		if (!affectedVariables.contains(var)) {
 			savedDomains.add(new Pair<>(var, domain));
 			affectedVariables.add(var);
@@ -66,7 +66,7 @@ public class DomainLog<VAR extends Variable, VAL> implements InferenceLog<VAR, L
 	}
 
 	@Override
-	public void undo(CSP<VAR, List<String>> csp) {
+	public void undo(CSP<VAR, VAL> csp) {
 		getSavedDomains().forEach(pair -> csp.setDomain(pair.getFirst(), pair.getSecond()));
 	}
 
@@ -75,13 +75,13 @@ public class DomainLog<VAR extends Variable, VAL> implements InferenceLog<VAR, L
 		return emptyDomainObserved;
 	}
 
-	private List<Pair<VAR, Domain<List<String>>>> getSavedDomains() {
+	private List<Pair<VAR, Domain<VAL>>> getSavedDomains() {
 		return savedDomains;
 	}
 
 	public String toString() {
 		StringBuilder result = new StringBuilder();
-		for (Pair<VAR, Domain<List<String>>> pair : savedDomains)
+		for (Pair<VAR, Domain<VAL>> pair : savedDomains)
 			result.append(pair.getFirst()).append("=").append(pair.getSecond()).append(" ");
 		if (emptyDomainObserved)
 			result.append("!");

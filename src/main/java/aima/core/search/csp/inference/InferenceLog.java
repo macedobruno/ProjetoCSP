@@ -1,7 +1,5 @@
 package aima.core.search.csp.inference;
 
-import java.util.List;
-
 import aima.core.search.csp.CSP;
 import aima.core.search.csp.Variable;
 
@@ -14,13 +12,13 @@ import aima.core.search.csp.Variable;
 public interface InferenceLog<VAR extends Variable, VAL> {
     boolean isEmpty();
     boolean inconsistencyFound();
-    void undo(CSP<VAR, List<String>> csp);
+    void undo(CSP<VAR, VAL> csp);
 
     /**
      * Returns an empty inference log.
      */
-    static <VAR extends Variable, VAL> InferenceLog<VAR, List<String>> emptyLog() {
-        return new InferenceLog<VAR, List<String>>() {
+    static <VAR extends Variable, VAL> InferenceLog<VAR, VAL> emptyLog() {
+        return new InferenceLog<VAR, VAL>() {
             @Override
             public boolean isEmpty() { return true; }
 
@@ -28,7 +26,7 @@ public interface InferenceLog<VAR extends Variable, VAL> {
             public boolean inconsistencyFound() { return false; }
 
             @Override
-            public void undo(CSP<VAR, List<String>> csp){ }
+            public void undo(CSP<VAR, VAL> csp){ }
         };
     }
 }

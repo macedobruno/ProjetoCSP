@@ -1,6 +1,10 @@
 package alanfx.ProjetoCSP;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import aima.core.search.csp.Assignment;
@@ -26,7 +30,7 @@ public class Main {
 		stepCounter.reset();
 		System.out.println("Alocar Professores (Minimum Conflicts)");
 		solution = solver.solve(csp);
-		solution.ifPresent(System.out::println);
+		System.out.println(toString(solution.get().getVariableToValueMap())); 
 		System.out.println(stepCounter.getResults() + "\n");
 		
 		solver = new FlexibleBacktrackingSolver<Variable, List<String>>().setAll();
@@ -34,7 +38,7 @@ public class Main {
 		stepCounter.reset();
 		System.out.println("Alocar Professores (Backtracking + MRV & DEG + LCV + AC3)");
 		solution = solver.solve(csp);
-		solution.ifPresent(System.out::println);
+		System.out.println(toString(solution.get().getVariableToValueMap()));
 		System.out.println(stepCounter.getResults() + "\n");
 
 		solver = new FlexibleBacktrackingSolver<Variable, List<String>>().set(CspHeuristics.mrvDeg());
@@ -42,7 +46,7 @@ public class Main {
 		stepCounter.reset();
 		System.out.println("Alocar Professores (Backtracking + MRV & DEG)");
 		solution = solver.solve(csp);
-		solution.ifPresent(System.out::println);
+		System.out.println(toString(solution.get().getVariableToValueMap()));
 		System.out.println(stepCounter.getResults() + "\n");
 		
 		solver = new FlexibleBacktrackingSolver<>();
@@ -50,7 +54,34 @@ public class Main {
 		stepCounter.reset();
 		System.out.println("Alocar Professores (Backtracking)");
 		solution = solver.solve(csp);
-		solution.ifPresent(System.out::println);
+		System.out.println(toString(solution.get().getVariableToValueMap()));
 		System.out.println(stepCounter.getResults() + "\n");
 	}
+	
+    public static String toString(LinkedHashMap<Variable, List<String>> assignment) {
+    	List<String> aulas = new ArrayList<>(
+    			Arrays.asList("SEG17","TER17","QUA17","QUI17","SEX17",
+    						  "SEG19","TER19","QUA19","QUI19","SEX19",
+    						  "SEG21","TER21","QUA21","QUI21","SEX21"));
+    	StringBuilder result = new StringBuilder("");
+    	int cont = 0;
+    	for( String aula : aulas) {
+    		cont++;
+    		Map.Entry<Variable, List<String>> map = null;
+    		for (Map.Entry<Variable, List<String>> entry : assignment.entrySet()) {
+    			if(aula.equals(entry.getValue().get(0))) {
+    				map = entry;
+    			}
+    		}
+    		if(map != null) {
+    			result.append(map+"\t");
+    		}else {
+    			result.append("         ||         \t");
+    		}
+    		if(cont == 5 || cont == 10 || cont == 15) {
+    			result.append("\n");
+    		}
+    	}
+    	return result.toString();
+    }
 }

@@ -10,7 +10,6 @@ import aima.core.search.csp.Variable;
 /**
  * Representa uma restrição unária que associa uma variável a um horário.
  * 
- * @author Ruediger Lunde
  */
 public class HorarioFixoConstraint<VAR extends Variable, VAL> implements Constraint<VAR, List<String>> {
 

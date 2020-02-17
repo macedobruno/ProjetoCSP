@@ -62,7 +62,7 @@ public class Domain<VAL> implements Iterable<VAL> {
 
 	@Override
 	public boolean equals(Object obj) {
-		return obj != null && getClass() == obj.getClass() && Arrays.equals(values, ((Domain) obj).values);
+		return obj != null && getClass() == obj.getClass() && Arrays.equals(values, ((Domain<?>) obj).values);
 	}
 
 	@Override

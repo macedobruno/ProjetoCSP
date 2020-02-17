@@ -11,22 +11,26 @@ public class Assignment<VAR extends Variable, VAL> implements Cloneable {
     /**
      * Maps variables to their assigned values.
      */
-    private LinkedHashMap<VAR, List<String>> variableToValueMap = new LinkedHashMap<>();
+    private LinkedHashMap<VAR, VAL> variableToValueMap = new LinkedHashMap<>();
 
-    public List<VAR> getVariables() {
+    public LinkedHashMap<VAR, VAL> getVariableToValueMap() {
+		return variableToValueMap;
+	}
+
+	public List<VAR> getVariables() {
         return new ArrayList<>(variableToValueMap.keySet());
     }
 
-    public List<String> getValue(VAR var) {
+    public VAL getValue(VAR var) {
         return variableToValueMap.get(var);
     }
 
-    public List<String> add(VAR var, List<String> value) {
+    public VAL add(VAR var, VAL value) {
         assert value != null;
-        return variableToValueMap.put(var, value);
+        return variableToValueMap.put(var, (VAL) value);
     }
 
-    public List<String> remove(VAR var) {
+    public VAL remove(VAR var) {
         return variableToValueMap.remove(var);
     }
 
@@ -60,10 +64,10 @@ public class Assignment<VAR extends Variable, VAL> implements Cloneable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Assignment<VAR, List<String>> clone() {
-        Assignment<VAR, List<String>> result;
+    public Assignment<VAR, VAL> clone() {
+        Assignment<VAR, VAL> result;
         try {
-            result = (Assignment<VAR, List<String>>) super.clone();
+            result = (Assignment<VAR, VAL>) super.clone();
             result.variableToValueMap = new LinkedHashMap<>(variableToValueMap);
         } catch (CloneNotSupportedException e) {
             throw new UnsupportedOperationException("Could not clone assignment."); // should never happen!
@@ -71,42 +75,15 @@ public class Assignment<VAR extends Variable, VAL> implements Cloneable {
         return result;
     }
 
-//    @Override
-//    public String toString() {
-//        StringBuilder result = new StringBuilder("{");
-//        for (Map.Entry<VAR, VAL> entry : variableToValueMap.entrySet()) {
-//            if (result.length() > 1)
-//                result.append(", ");
-//            result.append(entry.getKey()).append("=").append(entry.getValue());
-//        }
-//        result.append("}");
-//        return result.toString();
-//    }
     @Override
     public String toString() {
-    	List<String> aulas = new ArrayList<>(
-    			Arrays.asList("SEG17","TER17","QUA17","QUI17","SEX17",
-    						  "SEG19","TER19","QUA19","QUI19","SEX19",
-    						  "SEG21","TER21","QUA21","QUI21","SEX21"));
-    	StringBuilder result = new StringBuilder("");
-    	int cont = 0;
-    	for( String aula : aulas) {
-    		cont++;
-    		Map.Entry<VAR, List<String>> map = null;
-    		for (Map.Entry<VAR, List<String>> entry : variableToValueMap.entrySet()) {
-    			if(aula.equals(entry.getValue().get(0))) {
-    				map = entry;
-    			}
-    		}
-    		if(map != null) {
-    			result.append(map+"\t");
-    		}else {
-    			result.append("         ||         \t");
-    		}
-    		if(cont == 5 || cont == 10 || cont == 15) {
-    			result.append("\n");
-    		}
-    	}
-    	return result.toString();
+        StringBuilder result = new StringBuilder("{");
+        for (Map.Entry<VAR, VAL> entry : variableToValueMap.entrySet()) {
+            if (result.length() > 1)
+                result.append(", ");
+            result.append(entry.getKey()).append("=").append(entry.getValue());
+        }
+        result.append("}");
+        return result.toString();
     }
 }
