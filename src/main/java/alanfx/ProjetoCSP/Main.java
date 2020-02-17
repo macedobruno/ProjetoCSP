@@ -2,16 +2,16 @@ package alanfx.ProjetoCSP;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
 
 import aima.core.search.csp.Assignment;
 import aima.core.search.csp.CSP;
+import aima.core.search.csp.CspHeuristics;
 import aima.core.search.csp.CspListener;
 import aima.core.search.csp.CspSolver;
 import aima.core.search.csp.FlexibleBacktrackingSolver;
 import aima.core.search.csp.MinConflictsSolver;
 import aima.core.search.csp.Variable;
-import aima.core.search.csp.examples.AlocCSP;
+import alanfx.ProjetoCSP.CSP.AlocCSP;
 
 public class Main {
 
@@ -37,26 +37,20 @@ public class Main {
 		solution.ifPresent(System.out::println);
 		System.out.println(stepCounter.getResults() + "\n");
 
-//		solver = new FlexibleBacktrackingSolver<Variable, List<String>>().set(CspHeuristics.mrvDeg());
-//		solver.addCspListener(stepCounter);
-//		stepCounter.reset();
-//		System.out.println("Alocar Professores (Backtracking + MRV & DEG)");
-//		solution = solver.solve(csp);
-//		solution.ifPresent(System.out::println);
-//		System.out.println(stepCounter.getResults() + "\n");
-//		
-//		solver = new FlexibleBacktrackingSolver<>();
-//		solver.addCspListener(stepCounter);
-//		stepCounter.reset();
-//		System.out.println("Alocar Professores (Backtracking)");
-//		solution = solver.solve(csp);
-//		solution.ifPresent(System.out::println);
-//		System.out.println(stepCounter.getResults() + "\n");
+		solver = new FlexibleBacktrackingSolver<Variable, List<String>>().set(CspHeuristics.mrvDeg());
+		solver.addCspListener(stepCounter);
+		stepCounter.reset();
+		System.out.println("Alocar Professores (Backtracking + MRV & DEG)");
+		solution = solver.solve(csp);
+		solution.ifPresent(System.out::println);
+		System.out.println(stepCounter.getResults() + "\n");
 		
-		//Pausar xD
-		Scanner sc = new Scanner(System.in);
-		sc.nextLine();
-		sc.close();
+		solver = new FlexibleBacktrackingSolver<>();
+		solver.addCspListener(stepCounter);
+		stepCounter.reset();
+		System.out.println("Alocar Professores (Backtracking)");
+		solution = solver.solve(csp);
+		solution.ifPresent(System.out::println);
+		System.out.println(stepCounter.getResults() + "\n");
 	}
-
 }

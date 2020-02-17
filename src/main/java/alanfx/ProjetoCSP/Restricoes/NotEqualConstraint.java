@@ -1,4 +1,4 @@
-package aima.core.search.csp.examples;
+package alanfx.ProjetoCSP.Restricoes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,9 +8,8 @@ import aima.core.search.csp.Constraint;
 import aima.core.search.csp.Variable;
 
 /**
- * Represents a binary constraint which forbids equal values.
+ * Representa uma restrição binária que proíbe duas disciplinas de ter o mesmo horário.
  * 
- * @author Ruediger Lunde
  */
 public class NotEqualConstraint<VAR extends Variable, VAL> implements Constraint<VAR, List<String>> {
 

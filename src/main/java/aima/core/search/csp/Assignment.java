@@ -109,11 +109,4 @@ public class Assignment<VAR extends Variable, VAL> implements Cloneable {
     	}
     	return result.toString();
     }
-    
-    public String getAula(Map<String,List<String>> m, String aula) {
-        for (String s : m.keySet())
-                if (m.get(s).get(0).equals(aula))
-                        return s;
-        return null;
-    }
 }
