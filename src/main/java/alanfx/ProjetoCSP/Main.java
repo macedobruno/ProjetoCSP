@@ -30,7 +30,7 @@ public class Main {
 		stepCounter.reset();
 		System.out.println("Alocar Professores (Minimum Conflicts)");
 		solution = solver.solve(csp);
-		System.out.println(toString(solution.get().getVariableToValueMap())); 
+		System.out.println(toString(solution.get().getVariableToValueMap())); //TA LANÇANDO EXCEÇÃO QUANDO N TEM RESULTADOS
 		System.out.println(stepCounter.getResults() + "\n");
 		
 		solver = new FlexibleBacktrackingSolver<Variable, List<String>>().setAll();

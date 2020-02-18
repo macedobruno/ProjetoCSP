@@ -9,9 +9,10 @@ import java.util.Map;
 import aima.core.search.csp.CSP;
 import aima.core.search.csp.Domain;
 import aima.core.search.csp.Variable;
-import alanfx.ProjetoCSP.Restricoes.HorarioFixoConstraint;
 import alanfx.ProjetoCSP.Restricoes.HorarioDiferenteConstraint;
+import alanfx.ProjetoCSP.Restricoes.HorarioFixoConstraint;
 import alanfx.ProjetoCSP.Restricoes.PreferenciaDisciplinaConstraint;
+import alanfx.ProjetoCSP.Restricoes.ProfessorDiferenteConstraint;
 import alanfx.ProjetoCSP.Restricoes.UnicoProfessorConstraint;
 
 public class AlocCSP extends CSP<Variable, List<String>> {
@@ -25,6 +26,7 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 	public static final Variable SD2 = new Variable("SD2");    		
 	public static final Variable LR1 = new Variable("LR1");   	// LABORATORIO DE REDES DE COMPUTADORES 2cr
 	public static List<Variable> variaveis = new ArrayList<>(Arrays.asList(IA1,IA2,ESII1,ESII2,SAD1,SAD2,SD1,SD2,LR1));
+	public static List<Variable> variaveisUnicas = new ArrayList<>(Arrays.asList(IA1,ESII1,SAD1,SD1,LR1));
 	
 	public final List<String> aulas;
 	public List<String> profs;
@@ -48,7 +50,8 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 //		preferencias.put("Prof3", Arrays.asList(SD1, SD2));
 //		preferencias.put("Prof4", Arrays.asList(SD1, SD2));
 		
-		addAll(variaveis, 0); //add "HorarioDiferenteConstraint"
+		addAllHorarioDiferente(variaveis, 0); //add "HorarioDiferenteConstraint"
+		addAllProfessorDiferente(variaveisUnicas, 0); //add "ProfessorDiferenteConstraint"
 		
 		addConstraint(new HorarioFixoConstraint<>(ESII1, "QUI17"));
 		addConstraint(new HorarioFixoConstraint<>(ESII2, "QUI19"));
@@ -81,10 +84,17 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 	}
 	
 	//Adiciona todas as restricoes do tipo "HorarioDiferenteConstraint"
-	private void addAll(List<Variable> var, int j) {
+	private void addAllHorarioDiferente(List<Variable> var, int j) {
 		for(int i = j+1; i < var.size(); i++){
 			addConstraint(new HorarioDiferenteConstraint<>(var.get(j), var.get(i)));
 		}
-		if(j+1 < var.size()) addAll(var, j+1);
+		if(j+1 < var.size()) addAllHorarioDiferente(var, j+1);
+	}
+	//Adiciona todas as restricoes do tipo "ProfessorDiferenteConstraint"
+	private void addAllProfessorDiferente(List<Variable> var, int j) {
+		for(int i = j+1; i < var.size(); i++){
+			addConstraint(new ProfessorDiferenteConstraint<>(var.get(j), var.get(i)));
+		}
+		if(j+1 < var.size()) addAllProfessorDiferente(var, j+1);
 	}
 }
