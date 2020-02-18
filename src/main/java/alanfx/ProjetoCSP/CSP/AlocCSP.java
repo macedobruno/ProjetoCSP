@@ -10,8 +10,9 @@ import aima.core.search.csp.CSP;
 import aima.core.search.csp.Domain;
 import aima.core.search.csp.Variable;
 import alanfx.ProjetoCSP.Restricoes.HorarioFixoConstraint;
-import alanfx.ProjetoCSP.Restricoes.NotEqualConstraint;
+import alanfx.ProjetoCSP.Restricoes.HorarioDiferenteConstraint;
 import alanfx.ProjetoCSP.Restricoes.PreferenciaDisciplinaConstraint;
+import alanfx.ProjetoCSP.Restricoes.UnicoProfessorConstraint;
 
 public class AlocCSP extends CSP<Variable, List<String>> {
 	public static final Variable IA1 = new Variable("IA1"); 	//	INTELIGENCIA ARTIFICIAL 4cr
@@ -25,33 +26,32 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 	public static final Variable LR1 = new Variable("LR1");   	// LABORATORIO DE REDES DE COMPUTADORES 2cr
 	public static List<Variable> variaveis = new ArrayList<>(Arrays.asList(IA1,IA2,ESII1,ESII2,SAD1,SAD2,SD1,SD2,LR1));
 	
-	public List<String> aulas = new ArrayList<>(
-			Arrays.asList("SEG17","TER17","QUA17","QUI17","SEX17",
-						  "SEG19","TER19","QUA19","QUI19","SEX19",
-						  "SEG21","TER21","QUA21","QUI21","SEX21"));
-	
-	public List<String> profs = new ArrayList<>(Arrays.asList("Prof1","Prof2","Prof3","Prof4", "[N/A]"));
-	
+	public final List<String> aulas;
+	public List<String> profs;
 	public Map<String, List<Variable>> preferencias;
 
 	public AlocCSP() {
 		super(variaveis);
+		aulas = new ArrayList<>(
+			Arrays.asList("SEG17","TER17","QUA17","QUI17","SEX17",
+						  "SEG19","TER19","QUA19","QUI19","SEX19",
+						  "SEG21","TER21","QUA21","QUI21","SEX21"));
+		profs = new ArrayList<>(Arrays.asList("Prof1","Prof2","Prof3","Prof4", "[N/A]")); 
 
 		Domain<List<String>> domain = new Domain<>(createValues(profs, aulas));
 		for (Variable var : getVariables())
 			setDomain(var, domain);
-
-		addAll(variaveis, 0); 
+		
+		preferencias = new HashMap<>();
+//		preferencias.put("Prof1", Arrays.asList(SD1, SD2));
+//		preferencias.put("Prof2", Arrays.asList(SD1, SD2));
+//		preferencias.put("Prof3", Arrays.asList(SD1, SD2));
+//		preferencias.put("Prof4", Arrays.asList(SD1, SD2));
+		
+		addAll(variaveis, 0); //add "HorarioDiferenteConstraint"
 		
 		addConstraint(new HorarioFixoConstraint<>(ESII1, "QUI17"));
 		addConstraint(new HorarioFixoConstraint<>(ESII2, "QUI19"));
-		
-		preferencias = new HashMap<>();
-		preferencias.put("Prof1", Arrays.asList(SD1, SD2, LR1));
-		preferencias.put("Prof2", Arrays.asList(SD1, SD2, LR1));
-		preferencias.put("Prof3", Arrays.asList(SD1, SD2, LR1, ESII1, ESII2));
-		preferencias.put("Prof4", Arrays.asList(SD1, SD2, LR1));
-		
 		
 		addConstraint(new PreferenciaDisciplinaConstraint<>(IA1, preferencias));
 		addConstraint(new PreferenciaDisciplinaConstraint<>(IA2, preferencias));
@@ -63,6 +63,10 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 		addConstraint(new PreferenciaDisciplinaConstraint<>(SD2, preferencias));
 		addConstraint(new PreferenciaDisciplinaConstraint<>(LR1, preferencias));
 		
+		addConstraint(new UnicoProfessorConstraint<>(IA1, IA2));
+		addConstraint(new UnicoProfessorConstraint<>(ESII1, ESII2));
+		addConstraint(new UnicoProfessorConstraint<>(SAD1, SAD2));
+		addConstraint(new UnicoProfessorConstraint<>(SD1, SD2));
 	}
 	
 	//Associa Todos os professores a cada um dos horarios
@@ -76,10 +80,10 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 		return values;
 	}
 	
-	//Adiciona totas as restricoes do tipo "NotEqualConstraint"
+	//Adiciona todas as restricoes do tipo "HorarioDiferenteConstraint"
 	private void addAll(List<Variable> var, int j) {
 		for(int i = j+1; i < var.size(); i++){
-			addConstraint(new NotEqualConstraint<>(var.get(j), var.get(i)));
+			addConstraint(new HorarioDiferenteConstraint<>(var.get(j), var.get(i)));
 		}
 		if(j+1 < var.size()) addAll(var, j+1);
 	}
