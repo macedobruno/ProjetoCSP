@@ -39,7 +39,7 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 
 	public AlocCSP() {
 		super(variaveis);
-		profs = new ArrayList<>(Arrays.asList("Prof1","Prof2","Prof3","Prof4", "[N/A]")); 
+		profs = new ArrayList<>(Arrays.asList("Prof1","Prof2","Prof3","Prof4", "semProf")); 
 
 		Domain<List<String>> domain = new Domain<>(createValues(profs, aulas));
 		for (Variable var : getVariables())
