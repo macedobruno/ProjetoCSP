@@ -1,4 +1,4 @@
-package alanfx.ProjetoCSP.Restricoes;
+package alanfx.ProjetoCSP.restricoes;
 
 import java.util.ArrayList;
 import java.util.List;

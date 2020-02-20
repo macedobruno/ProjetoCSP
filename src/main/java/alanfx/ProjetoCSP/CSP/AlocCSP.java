@@ -1,19 +1,21 @@
-package alanfx.ProjetoCSP.CSP;
+package alanfx.ProjetoCSP.csp;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import aima.core.search.csp.Assignment;
 import aima.core.search.csp.CSP;
 import aima.core.search.csp.Domain;
 import aima.core.search.csp.Variable;
-import alanfx.ProjetoCSP.Restricoes.HorarioDiferenteConstraint;
-import alanfx.ProjetoCSP.Restricoes.HorarioFixoConstraint;
-import alanfx.ProjetoCSP.Restricoes.PreferenciaDisciplinaConstraint;
-import alanfx.ProjetoCSP.Restricoes.ProfessorDiferenteConstraint;
-import alanfx.ProjetoCSP.Restricoes.UnicoProfessorConstraint;
+import alanfx.ProjetoCSP.restricoes.HorarioDiferenteConstraint;
+import alanfx.ProjetoCSP.restricoes.HorarioFixoConstraint;
+import alanfx.ProjetoCSP.restricoes.PreferenciaDisciplinaConstraint;
+import alanfx.ProjetoCSP.restricoes.ProfessorDiferenteConstraint;
+import alanfx.ProjetoCSP.restricoes.UnicoProfessorConstraint;
 
 public class AlocCSP extends CSP<Variable, List<String>> {
 	public static final Variable IA1 = new Variable("IA1"); 	//	INTELIGENCIA ARTIFICIAL 4cr
@@ -28,16 +30,15 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 	public static List<Variable> variaveis = new ArrayList<>(Arrays.asList(IA1,IA2,ESII1,ESII2,SAD1,SAD2,SD1,SD2,LR1));
 	public static List<Variable> variaveisUnicas = new ArrayList<>(Arrays.asList(IA1,ESII1,SAD1,SD1,LR1));
 	
-	public final List<String> aulas;
+	public static final List<String> aulas = new ArrayList<>(
+		Arrays.asList("SEG17","TER17","QUA17","QUI17","SEX17",
+					  "SEG19","TER19","QUA19","QUI19","SEX19",
+					  "SEG21","TER21","QUA21","QUI21","SEX21"));;
 	public List<String> profs;
 	public Map<String, List<Variable>> preferencias;
 
 	public AlocCSP() {
 		super(variaveis);
-		aulas = new ArrayList<>(
-			Arrays.asList("SEG17","TER17","QUA17","QUI17","SEX17",
-						  "SEG19","TER19","QUA19","QUI19","SEX19",
-						  "SEG21","TER21","QUA21","QUI21","SEX21"));
 		profs = new ArrayList<>(Arrays.asList("Prof1","Prof2","Prof3","Prof4", "[N/A]")); 
 
 		Domain<List<String>> domain = new Domain<>(createValues(profs, aulas));
@@ -97,4 +98,28 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 		}
 		if(j+1 < var.size()) addAllProfessorDiferente(var, j+1);
 	}
+	
+    public static void imprimir(Assignment<Variable, List<String>> solution) {
+    	LinkedHashMap<Variable, List<String>> assignment = solution.getVariableToValueMap();
+    	StringBuilder result = new StringBuilder("");
+    	int cont = 0;
+    	for( String aula : aulas) {
+    		cont++;
+    		Map.Entry<Variable, List<String>> map = null;
+    		for (Map.Entry<Variable, List<String>> entry : assignment.entrySet()) {
+    			if(aula.equals(entry.getValue().get(0))) {
+    				map = entry;
+    			}
+    		}
+    		if(map != null) {
+    			result.append(map+"\t");
+    		}else {
+    			result.append("         ||         \t");
+    		}
+    		if(cont == 5 || cont == 10 || cont == 15) {
+    			result.append("\n");
+    		}
+    	}
+    	System.out.println(result.toString());
+    }
 }
