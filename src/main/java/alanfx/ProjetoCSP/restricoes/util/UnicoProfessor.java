@@ -1,4 +1,4 @@
-package alanfx.ProjetoCSP.restricoes;
+package alanfx.ProjetoCSP.restricoes.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,13 +11,13 @@ import aima.core.search.csp.Variable;
  * Representa uma restrição que proíbe uma disciplina de ter mais de um professor.
  * 
  */
-public class UnicoProfessorConstraint<VAR extends Variable, VAL> implements Constraint<VAR, List<String>> {
+public class UnicoProfessor<VAR extends Variable, VAL> implements Constraint<VAR, List<String>> {
 
 	private VAR var1;
 	private VAR var2;
 	private List<VAR> scope;
 
-	public UnicoProfessorConstraint(VAR var1, VAR var2) {
+	public UnicoProfessor(VAR var1, VAR var2) {
 		this.var1 = var1;
 		this.var2 = var2;
 		scope = new ArrayList<>(2);
