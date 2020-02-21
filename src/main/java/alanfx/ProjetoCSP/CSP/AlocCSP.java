@@ -32,7 +32,8 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 					  "SEG21","TER21","QUA21","QUI21","SEX21"));;
 
 	public AlocCSP(List<Disciplina> disciplinas, 
-			 	   List<Professor> professores, 
+			 	   List<Professor> professores,
+			 	   List<String> restricoesList,
 			 	   Constraint<Variable, List<String>> restricaoDinamica) {
 		this.variaveis = criarVariaveis(disciplinas);
 		addVariaveis(variaveis);
@@ -45,12 +46,7 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 		
 		this.preferencias = criarPreferencias(professores);
 		
-		addAllHorarioDiferente(variaveis, 0); //add "HorarioDiferente"
-		addAllProfessorDiferente(variaveisUnicas, 0); //add "ProfessorDiferente"
-		
-		addAllPreferencias(variaveis, preferencias);
-
-		addAllHorarioFixo(disciplinas);
+		addRestricoesSelecionadas(restricoesList, disciplinas); //adicionando restricoes selecionados pelo usuario
 		
 		addAllUnicoProfessor(disciplinas);
 		addAllPriorizarProfessores(variaveis, this.professores, preferencias);
@@ -62,6 +58,21 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 		addConstraint(restricaoDinamica); 
 	}
 	
+	private void addRestricoesSelecionadas(List<String> restricoesList, List<Disciplina> disciplinas) {
+		if(restricoesList.contains("HorarioDiferente")) {
+			addAllHorarioDiferente(variaveis, 0); //add "HorarioDiferente"
+		}
+		if(restricoesList.contains("ProfessorDiferente")) {
+			addAllProfessorDiferente(variaveisUnicas, 0); //add "ProfessorDiferente"
+		}
+		if(restricoesList.contains("PreferenciaDisciplina")) {
+			addAllPreferencias(variaveis, preferencias);
+		}
+		if(restricoesList.contains("HorarioFixo")) {
+			addAllHorarioFixo(disciplinas);
+		}
+	}
+
 	private void addAllHorarioFixo(List<Disciplina> disciplinas) {
 		for(Disciplina disc : disciplinas) {
 			if(!disc.getHorarios().isEmpty()) {

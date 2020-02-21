@@ -26,11 +26,19 @@ public class Main {
 	
 	private static List<Disciplina> disciplinas = new ArrayList<>();
 	private static List<Professor> professores = new ArrayList<>();
+	
+	//Lista de algoritmos que poderao ser selecionados pelo usuario (apenas um sera selecionado por vez)
 	private static final List<String> algoritmos = new ArrayList<>(
-			Arrays.asList("MinConflictsSolver",
-						  "Backtracking + MRV & DEG + LCV + AC3",
-						  "Backtracking + MRV & DEG",
-						  "Backtracking"));
+		Arrays.asList("MinConflictsSolver",
+					  "Backtracking + MRV & DEG + LCV + AC3",
+					  "Backtracking + MRV & DEG",
+					  "Backtracking"));
+	
+	private static List<String> restricoesList;
+	
+	//Lista de restricoes que poderao ser selecionadas pelo usuario
+	private static final List<String> restricoesPossiveis = new ArrayList<>( 
+		Arrays.asList("HorarioDiferente", "ProfessorDiferente", "PreferenciaDisciplina", "HorarioFixo"));
 	
 	private static List<Variable> variaveis;
 	private static List<List<String>> valores;
@@ -49,6 +57,10 @@ public class Main {
 		Professor ana = new Professor("Ana");
 		
 		estombelo.addPreferencia(calculo);
+		
+		//Exemplo de instanciacao da lista de restricoes
+		restricoesList = new ArrayList<>(
+			Arrays.asList("HorarioDiferente", "ProfessorDiferente", "PreferenciaDisciplina", "HorarioFixo"));
 		
 		disciplinas.add(fisica);
 		disciplinas.add(calculo);
@@ -117,7 +129,7 @@ public class Main {
 		Set<Optional<Assignment<Variable, List<String>>>> set = new HashSet<>();
 		for (Variable var : variaveis) {
 			for (List<String> val : valores) {
-				CSP<Variable, List<String>> csp = new AlocCSP(disciplinas, professores, new ValorAtribuido<>(var, val));
+				CSP<Variable, List<String>> csp = new AlocCSP(disciplinas, professores, restricoesList, new ValorAtribuido<>(var, val));
 				solution = solver.solve(csp);
 				set.add(solution);
 			}
