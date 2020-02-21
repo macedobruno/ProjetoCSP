@@ -55,13 +55,11 @@ public class Main {
 		professores.add(maria);
 		professores.add(ana);
 		
-		CSP<Variable, List<String>> csp = new AlocCSP(disciplinas, professores);
-		CspListener.StepCounter<Variable, List<String>> stepCounter = new CspListener.StepCounter<>();
-
 		String algorit = "MinConflictsSolver"; //Exemplo algoritmo selecionado
 		
+		CspListener.StepCounter<Variable, List<String>> stepCounter = new CspListener.StepCounter<>();
 		Set<Optional<Assignment<Variable, List<String>>>> solucoesList = //usar essa lista pra exibir os resultados na interface
-				usarAlgoritmo(algorit, csp, stepCounter);
+				usarAlgoritmo(algorit, stepCounter);
 
 		System.out.println("Alocar Professores ("+algorit+")");
 		for (Optional<Assignment<Variable, List<String>>> soluc : solucoesList) {
@@ -72,7 +70,7 @@ public class Main {
 	}
 
 	private static Set<Optional<Assignment<Variable, List<String>>>> usarAlgoritmo(String algorit,
-			CSP<Variable, List<String>> csp, StepCounter<Variable, List<String>> stepCounter) {
+			StepCounter<Variable, List<String>> stepCounter) {
 		CspSolver<Variable, List<String>> solver;
 		switch(algorit) {
 			case "MinConflictsSolver":
@@ -80,32 +78,33 @@ public class Main {
 				solver.addCspListener(stepCounter);
 				stepCounter.reset();
 				
-				return getSolucoes(csp, solver);
+				return getSolucoes(solver);
 			case "Backtracking + MRV & DEG + LCV + AC3":
 				solver = new FlexibleBacktrackingSolver<Variable, List<String>>().setAll();
 				solver.addCspListener(stepCounter);
 				stepCounter.reset();
 				
-				return getSolucoes(csp, solver);
+				return getSolucoes(solver);
 			case "Backtracking + MRV & DEG":
 				solver = new FlexibleBacktrackingSolver<Variable, List<String>>().set(CspHeuristics.mrvDeg());
 				solver.addCspListener(stepCounter);
 				stepCounter.reset();
 				
-				return getSolucoes(csp, solver);
+				return getSolucoes(solver);
 			case "Backtracking":
 				solver = new FlexibleBacktrackingSolver<>();
 				solver.addCspListener(stepCounter);
 				stepCounter.reset();
 				
-				return getSolucoes(csp, solver);
+				return getSolucoes(solver);
 			default:
 				return new HashSet<>();
 		}
 	}
 
-	private static Set<Optional<Assignment<Variable, List<String>>>> getSolucoes(CSP<Variable, List<String>> csp, CspSolver<Variable, List<String>> solver) {
+	private static Set<Optional<Assignment<Variable, List<String>>>> getSolucoes(CspSolver<Variable, List<String>> solver) {
 		int n = 4; // Número de resultados
+		CSP<Variable, List<String>> csp = new AlocCSP(disciplinas, professores);
 		Optional<Assignment<Variable, List<String>>> solution;
 		Set<Optional<Assignment<Variable, List<String>>>> set = new HashSet<>();
 		for (int i = 0; i < n; i++) {

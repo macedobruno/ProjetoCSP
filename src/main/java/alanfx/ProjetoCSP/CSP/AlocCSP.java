@@ -130,7 +130,6 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 				values.add(Arrays.asList(aula, prof));
 			}
 		}
-		System.out.println(values);
 		return values;
 	}
 	
