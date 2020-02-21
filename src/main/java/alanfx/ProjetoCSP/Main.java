@@ -20,9 +20,10 @@ import alanfx.ProjetoCSP.csp.AlocCSP;
 
 import alanfx.ProjetoCSP.csp.Disciplina;
 import alanfx.ProjetoCSP.csp.Professor;
+import alanfx.ProjetoCSP.restricoes.util.ValorAtribuido;
 
 public class Main {
-
+	
 	private static List<Disciplina> disciplinas = new ArrayList<>();
 	private static List<Professor> professores = new ArrayList<>();
 	private static final List<String> algoritmos = new ArrayList<>(
@@ -30,6 +31,9 @@ public class Main {
 						  "Backtracking + MRV & DEG + LCV + AC3",
 						  "Backtracking + MRV & DEG",
 						  "Backtracking"));
+	
+	private static List<Variable> variaveis;
+	private static List<List<String>> valores;
 	
 	public static void main(String[] args) {
 		
@@ -57,16 +61,22 @@ public class Main {
 		
 		String algorit = "MinConflictsSolver"; //Exemplo algoritmo selecionado
 		
+		variaveis = AlocCSP.criarVariaveis(disciplinas);
+		valores = AlocCSP.createValues(AlocCSP.criarProfessores(professores), AlocCSP.aulas);
 		CspListener.StepCounter<Variable, List<String>> stepCounter = new CspListener.StepCounter<>();
 		Set<Optional<Assignment<Variable, List<String>>>> solucoesList = //usar essa lista pra exibir os resultados na interface
 				usarAlgoritmo(algorit, stepCounter);
-
-		System.out.println("Alocar Professores ("+algorit+")");
-		for (Optional<Assignment<Variable, List<String>>> soluc : solucoesList) {
-			soluc.ifPresent(AlocCSP::imprimir);
-			System.out.println("------------------------------");
-		}
-		System.out.println(stepCounter.getResults() + "\n");
+		
+		
+		//==============================================================
+		//ESSA PARTE SERÁ DESCARTADA DEPOIS DE CRIAR A INTERFACE GRÁFICA
+			System.out.println("Alocar Professores ("+algorit+")");
+			for (Optional<Assignment<Variable, List<String>>> soluc : solucoesList) {
+				soluc.ifPresent(AlocCSP::imprimir);
+				System.out.println("------------------------------");
+			}
+			System.out.println(stepCounter.getResults() + "\n");
+		//==============================================================
 	}
 
 	private static Set<Optional<Assignment<Variable, List<String>>>> usarAlgoritmo(String algorit,
@@ -103,13 +113,14 @@ public class Main {
 	}
 
 	private static Set<Optional<Assignment<Variable, List<String>>>> getSolucoes(CspSolver<Variable, List<String>> solver) {
-		int n = 4; // Número de resultados
-		CSP<Variable, List<String>> csp = new AlocCSP(disciplinas, professores);
 		Optional<Assignment<Variable, List<String>>> solution;
 		Set<Optional<Assignment<Variable, List<String>>>> set = new HashSet<>();
-		for (int i = 0; i < n; i++) {
-			solution = solver.solve(csp);
-			set.add(solution);
+		for (Variable var : variaveis) {
+			for (List<String> val : valores) {
+				CSP<Variable, List<String>> csp = new AlocCSP(disciplinas, professores, new ValorAtribuido<>(var, val));
+				solution = solver.solve(csp);
+				set.add(solution);
+			}
 		}
 		return set;
 	}

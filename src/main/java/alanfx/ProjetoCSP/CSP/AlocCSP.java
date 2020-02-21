@@ -9,6 +9,7 @@ import java.util.Map;
 
 import aima.core.search.csp.Assignment;
 import aima.core.search.csp.CSP;
+import aima.core.search.csp.Constraint;
 import aima.core.search.csp.Domain;
 import aima.core.search.csp.Variable;
 import alanfx.ProjetoCSP.restricoes.HorarioDiferente;
@@ -30,7 +31,9 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 					  "SEG19","TER19","QUA19","QUI19","SEX19",
 					  "SEG21","TER21","QUA21","QUI21","SEX21"));;
 
-	public AlocCSP(List<Disciplina> disciplinas, List<Professor> professores) {
+	public AlocCSP(List<Disciplina> disciplinas, 
+			 	   List<Professor> professores, 
+			 	   Constraint<Variable, List<String>> restricaoDinamica) {
 		this.variaveis = criarVariaveis(disciplinas);
 		addVariaveis(variaveis);
 		this.professores = criarProfessores(professores); 
@@ -51,6 +54,12 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 		
 		addAllUnicoProfessor(disciplinas);
 		addAllPriorizarProfessores(variaveis, this.professores, preferencias);
+		
+		/*
+		 * Aqui se insere a restricao para atribuir valores a cada variavel
+		 * dinamicamente para gerar os melhores resultados
+		 */
+		addConstraint(restricaoDinamica); 
 	}
 	
 	private void addAllHorarioFixo(List<Disciplina> disciplinas) {
@@ -98,7 +107,7 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 		return prefs;
 	}
 
-	private List<String> criarProfessores(List<Professor> professores2) {
+	public static List<String> criarProfessores(List<Professor> professores2) {
 		List<String> profs = new ArrayList<>();
 		for(Professor prof : professores2) {
 			profs.add(prof.getNome());
@@ -112,7 +121,7 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 			addVariable(var);
 	}
 
-	private List<Variable> criarVariaveis(List<Disciplina> disciplinas) {
+	public static List<Variable> criarVariaveis(List<Disciplina> disciplinas) {
 		List<Variable> vars = new ArrayList<>();
 		for(Disciplina disc : disciplinas) {
 			for(Variable var : disc.getVars()) {
@@ -123,7 +132,7 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 	}
 
 	//Associa Todos os professores a cada um dos horarios
-	private List<List<String>> createValues(List<String> profs, List<String> aulas) {
+	public static List<List<String>> createValues(List<String> profs, List<String> aulas) {
 		List<List<String>> values = new ArrayList<>();
 		for(String prof : profs) {
 			for(String aula : aulas) {
