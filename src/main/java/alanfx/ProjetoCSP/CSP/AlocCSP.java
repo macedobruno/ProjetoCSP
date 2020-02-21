@@ -19,63 +19,108 @@ import alanfx.ProjetoCSP.restricoes.util.PriorizarProfessores;
 import alanfx.ProjetoCSP.restricoes.util.UnicoProfessor;
 
 public class AlocCSP extends CSP<Variable, List<String>> {
-	public static final Variable IA1 = new Variable("IA1"); 	//	INTELIGENCIA ARTIFICIAL 4cr
-	public static final Variable IA2 = new Variable("IA2"); 		
-	public static final Variable ESII1 = new Variable("ESII1"); // ENGENHARIA DE SOFTWARE II 4cr
-	public static final Variable ESII2 = new Variable("ESII2"); 	
-	public static final Variable SAD1 = new Variable("SAD1");  	//	SISTEMAS DE APOIO A DECISAO 4cr
-	public static final Variable SAD2 = new Variable("SAD2");  
-	public static final Variable SD1 = new Variable("SD1");    	//	SISTEMAS DISTRIBUIDOS 4cr
-	public static final Variable SD2 = new Variable("SD2");    		
-	public static final Variable LR1 = new Variable("LR1");   	// LABORATORIO DE REDES DE COMPUTADORES 2cr
-	public static List<Variable> variaveis = new ArrayList<>(Arrays.asList(IA1,IA2,ESII1,ESII2,SAD1,SAD2,SD1,SD2,LR1));
-	public static List<Variable> variaveisUnicas = new ArrayList<>(Arrays.asList(IA1,ESII1,SAD1,SD1,LR1));
+
+	private List<Variable> variaveis;
+	private List<Variable> variaveisUnicas;
+	private List<String> professores;
+	private Map<String, List<Variable>> preferencias;
 	
 	public static final List<String> aulas = new ArrayList<>(
 		Arrays.asList("SEG17","TER17","QUA17","QUI17","SEX17",
 					  "SEG19","TER19","QUA19","QUI19","SEX19",
 					  "SEG21","TER21","QUA21","QUI21","SEX21"));;
-	public List<String> profs;
-	public Map<String, List<Variable>> preferencias;
 
-	public AlocCSP() {
-		super(variaveis);
-		profs = new ArrayList<>(Arrays.asList("Prof1","Prof2","Prof3","Prof4","semProf")); 
-
-		Domain<List<String>> domain = new Domain<>(createValues(profs, aulas));
+	public AlocCSP(List<Disciplina> disciplinas, List<Professor> professores) {
+		this.variaveis = criarVariaveis(disciplinas);
+		addVariaveis(variaveis);
+		this.professores = criarProfessores(professores); 
+		this.variaveisUnicas = criarVariaveisUnicas(disciplinas);
+		
+		Domain<List<String>> domain = new Domain<>(createValues(this.professores, aulas));
 		for (Variable var : getVariables())
 			setDomain(var, domain);
 		
-		preferencias = new HashMap<>();
-		preferencias.put("Prof1", Arrays.asList(SD1, SD2, IA1, IA2));
-		preferencias.put("Prof2", Arrays.asList(SD1, SD2));
-		preferencias.put("Prof3", Arrays.asList(SD1, SD2, ESII1, ESII2, LR1));
-//		preferencias.put("Prof4", Arrays.asList(SD1, SD2));
+		this.preferencias = criarPreferencias(professores);
 		
-		addAllHorarioDiferente(variaveis, 0); //add "HorarioDiferenteConstraint"
-		addAllProfessorDiferente(variaveisUnicas, 0); //add "ProfessorDiferenteConstraint"
+		addAllHorarioDiferente(variaveis, 0); //add "HorarioDiferente"
+		addAllProfessorDiferente(variaveisUnicas, 0); //add "ProfessorDiferente"
 		
-		addConstraint(new HorarioFixo<>(ESII1, "QUI17"));
-		addConstraint(new HorarioFixo<>(ESII2, "QUI19"));
+		addAllPreferencias(variaveis, preferencias);
+
+		addAllHorarioFixo(disciplinas);
 		
-		addConstraint(new PreferenciaDisciplina<>(IA1, preferencias));
-		addConstraint(new PreferenciaDisciplina<>(IA2, preferencias));
-		addConstraint(new PreferenciaDisciplina<>(ESII1, preferencias));
-		addConstraint(new PreferenciaDisciplina<>(ESII2, preferencias));
-		addConstraint(new PreferenciaDisciplina<>(SAD1, preferencias));
-		addConstraint(new PreferenciaDisciplina<>(SAD2, preferencias));
-		addConstraint(new PreferenciaDisciplina<>(SD1, preferencias));
-		addConstraint(new PreferenciaDisciplina<>(SD2, preferencias));
-		addConstraint(new PreferenciaDisciplina<>(LR1, preferencias));
-		
-		addConstraint(new UnicoProfessor<>(IA1, IA2));
-		addConstraint(new UnicoProfessor<>(ESII1, ESII2));
-		addConstraint(new UnicoProfessor<>(SAD1, SAD2));
-		addConstraint(new UnicoProfessor<>(SD1, SD2));
-		
-		addAllPriorizarProfessores(variaveis, profs, preferencias);
+		addAllUnicoProfessor(disciplinas);
+		addAllPriorizarProfessores(variaveis, this.professores, preferencias);
 	}
 	
+	private void addAllHorarioFixo(List<Disciplina> disciplinas) {
+		for(Disciplina disc : disciplinas) {
+			if(!disc.getHorarios().isEmpty()) {
+				for(int i = 0; i< disc.getHorarios().size();i++) {
+					addConstraint(new HorarioFixo<>(disc.getVars().get(i), disc.getHorarios().get(i)));
+				}
+			}
+		}
+	}
+
+	private void addAllUnicoProfessor(List<Disciplina> disciplinas) {
+		for(Disciplina disc : disciplinas) {
+			if(disc.getVars().size() > 1) {
+				addConstraint(new UnicoProfessor<>(disc.getVars().get(0), disc.getVars().get(1)));
+			}
+			if(disc.getVars().size() > 2) {
+				addConstraint(new UnicoProfessor<>(disc.getVars().get(0), disc.getVars().get(2)));
+				addConstraint(new UnicoProfessor<>(disc.getVars().get(1), disc.getVars().get(2)));
+			}
+		}
+	}
+
+	private void addAllPreferencias(List<Variable> variaveis2, Map<String, List<Variable>> preferencias2) {
+		for(Variable var : variaveis2) {
+			addConstraint(new PreferenciaDisciplina<>(var, preferencias2));
+		}
+	}
+
+	private List<Variable> criarVariaveisUnicas(List<Disciplina> disciplinas) {
+		List<Variable> vars = new ArrayList<>();
+		for(Disciplina disc : disciplinas) {
+			vars.add(disc.getVars().get(0));
+		}
+		return vars;
+	}
+
+	private Map<String, List<Variable>> criarPreferencias(List<Professor> professores2) {
+		Map<String, List<Variable>> prefs = new HashMap<>();
+		for(Professor prof : professores2) {
+			prefs.put(prof.getNome(), prof.getPreferencias());
+		}
+		return prefs;
+	}
+
+	private List<String> criarProfessores(List<Professor> professores2) {
+		List<String> profs = new ArrayList<>();
+		for(Professor prof : professores2) {
+			profs.add(prof.getNome());
+		}
+		profs.add("semProf");
+		return profs;
+	}
+
+	private void addVariaveis(List<Variable> variaveis2) {
+		for(Variable var : variaveis2)
+			addVariable(var);
+	}
+
+	private List<Variable> criarVariaveis(List<Disciplina> disciplinas) {
+		List<Variable> vars = new ArrayList<>();
+		for(Disciplina disc : disciplinas) {
+			for(Variable var : disc.getVars()) {
+				vars.add(var);
+			}
+		}
+		return vars;
+	}
+
 	//Associa Todos os professores a cada um dos horarios
 	private List<List<String>> createValues(List<String> profs, List<String> aulas) {
 		List<List<String>> values = new ArrayList<>();
