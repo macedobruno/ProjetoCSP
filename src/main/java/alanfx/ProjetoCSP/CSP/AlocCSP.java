@@ -92,7 +92,8 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 	private Map<String, List<Variable>> criarPreferencias(List<Professor> professores2) {
 		Map<String, List<Variable>> prefs = new HashMap<>();
 		for(Professor prof : professores2) {
-			prefs.put(prof.getNome(), prof.getPreferencias());
+			if(!prof.getPreferencias().isEmpty())
+				prefs.put(prof.getNome(), prof.getPreferencias());
 		}
 		return prefs;
 	}
@@ -129,6 +130,7 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 				values.add(Arrays.asList(aula, prof));
 			}
 		}
+		System.out.println(values);
 		return values;
 	}
 	

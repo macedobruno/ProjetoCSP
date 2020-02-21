@@ -29,18 +29,25 @@ public class Main {
 		
 		Disciplina fisica = new Disciplina("Fisica", 4);
 		Disciplina calculo = new Disciplina("Calculo", 6);
+		Disciplina biologia = new Disciplina("Biologia", 4);
 		
 		fisica.setHorarios(Arrays.asList("SEG17", "SEG19"));
 		
 		Professor leonardo = new Professor("Leonardo");
 		Professor estombelo = new Professor("Estombelo");
+		Professor maria = new Professor("Maria");
+		Professor ana = new Professor("Ana");
 		
 		estombelo.addPreferencia(calculo);
 		
 		disciplinas.add(fisica);
 		disciplinas.add(calculo);
+		disciplinas.add(biologia);
+		
 		professores.add(leonardo);
 		professores.add(estombelo);
+		professores.add(maria);
+		professores.add(ana);
 		
 		CSP<Variable, List<String>> csp = new AlocCSP(disciplinas, professores);
 		CspListener.StepCounter<Variable, List<String>> stepCounter = new CspListener.StepCounter<>();
