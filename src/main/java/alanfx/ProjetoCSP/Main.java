@@ -100,9 +100,8 @@ public class Main {
 				
 				return getSolucoes(csp, solver);
 			default:
-				System.out.println("algoritmo invalido");
+				return new HashSet<>();
 		}
-		return null;
 	}
 
 	private static Set<Optional<Assignment<Variable, List<String>>>> getSolucoes(CSP<Variable, List<String>> csp, CspSolver<Variable, List<String>> solver) {
