@@ -11,6 +11,7 @@ import aima.core.search.csp.Assignment;
 import aima.core.search.csp.CSP;
 import aima.core.search.csp.CspHeuristics;
 import aima.core.search.csp.CspListener;
+import aima.core.search.csp.CspListener.StepCounter;
 import aima.core.search.csp.CspSolver;
 import aima.core.search.csp.FlexibleBacktrackingSolver;
 import aima.core.search.csp.MinConflictsSolver;
@@ -24,6 +25,11 @@ public class Main {
 
 	private static List<Disciplina> disciplinas = new ArrayList<>();
 	private static List<Professor> professores = new ArrayList<>();
+	private static final List<String> algoritmos = new ArrayList<>(
+			Arrays.asList("MinConflictsSolver",
+						  "Backtracking + MRV & DEG + LCV + AC3",
+						  "Backtracking + MRV & DEG",
+						  "Backtracking"));
 	
 	public static void main(String[] args) {
 		
@@ -51,39 +57,55 @@ public class Main {
 		
 		CSP<Variable, List<String>> csp = new AlocCSP(disciplinas, professores);
 		CspListener.StepCounter<Variable, List<String>> stepCounter = new CspListener.StepCounter<>();
-		CspSolver<Variable, List<String>> solver;
 
-		solver = new MinConflictsSolver<>(1000);
-		solver.addCspListener(stepCounter);
-		stepCounter.reset();
-		System.out.println("Alocar Professores (Minimum Conflicts)");
-		mostrarSolucoes(csp, solver);
-		System.out.println(stepCounter.getResults() + "\n");
-
-		solver = new FlexibleBacktrackingSolver<Variable, List<String>>().setAll();
-		solver.addCspListener(stepCounter);
-		stepCounter.reset();
-		System.out.println("Alocar Professores (Backtracking + MRV & DEG + LCV + AC3)");
-		mostrarSolucoes(csp, solver);
-		System.out.println(stepCounter.getResults() + "\n");
+		String algorit = "MinConflictsSolver"; //Exemplo algoritmo selecionado
 		
-		solver = new FlexibleBacktrackingSolver<Variable, List<String>>().set(CspHeuristics.mrvDeg());
-		solver.addCspListener(stepCounter);
-		stepCounter.reset();
-		System.out.println("Alocar Professores (Backtracking + MRV & DEG)");
-		mostrarSolucoes(csp, solver);
-		System.out.println(stepCounter.getResults() + "\n");
+		Set<Optional<Assignment<Variable, List<String>>>> solucoesList = //usar essa lista pra exibir os resultados na interface
+				usarAlgoritmo(algorit, csp, stepCounter);
 
-		solver = new FlexibleBacktrackingSolver<>();
-		solver.addCspListener(stepCounter);
-		stepCounter.reset();
-		System.out.println("Alocar Professores (Backtracking)");
-		mostrarSolucoes(csp, solver);
+		System.out.println("Alocar Professores ("+algorit+")");
+		for (Optional<Assignment<Variable, List<String>>> soluc : solucoesList) {
+			soluc.ifPresent(AlocCSP::imprimir);
+			System.out.println("------------------------------");
+		}
 		System.out.println(stepCounter.getResults() + "\n");
-
 	}
 
-	private static void mostrarSolucoes(CSP<Variable, List<String>> csp, CspSolver<Variable, List<String>> solver) {
+	private static Set<Optional<Assignment<Variable, List<String>>>> usarAlgoritmo(String algorit,
+			CSP<Variable, List<String>> csp, StepCounter<Variable, List<String>> stepCounter) {
+		CspSolver<Variable, List<String>> solver;
+		switch(algorit) {
+			case "MinConflictsSolver":
+				solver = new MinConflictsSolver<>(1000);
+				solver.addCspListener(stepCounter);
+				stepCounter.reset();
+				
+				return getSolucoes(csp, solver);
+			case "Backtracking + MRV & DEG + LCV + AC3":
+				solver = new FlexibleBacktrackingSolver<Variable, List<String>>().setAll();
+				solver.addCspListener(stepCounter);
+				stepCounter.reset();
+				
+				return getSolucoes(csp, solver);
+			case "Backtracking + MRV & DEG":
+				solver = new FlexibleBacktrackingSolver<Variable, List<String>>().set(CspHeuristics.mrvDeg());
+				solver.addCspListener(stepCounter);
+				stepCounter.reset();
+				
+				return getSolucoes(csp, solver);
+			case "Backtracking":
+				solver = new FlexibleBacktrackingSolver<>();
+				solver.addCspListener(stepCounter);
+				stepCounter.reset();
+				
+				return getSolucoes(csp, solver);
+			default:
+				System.out.println("algoritmo invalido");
+		}
+		return null;
+	}
+
+	private static Set<Optional<Assignment<Variable, List<String>>>> getSolucoes(CSP<Variable, List<String>> csp, CspSolver<Variable, List<String>> solver) {
 		int n = 4; // Número de resultados
 		Optional<Assignment<Variable, List<String>>> solution;
 		Set<Optional<Assignment<Variable, List<String>>>> set = new HashSet<>();
@@ -91,9 +113,6 @@ public class Main {
 			solution = solver.solve(csp);
 			set.add(solution);
 		}
-		for (Optional<Assignment<Variable, List<String>>> soluc : set) {
-			soluc.ifPresent(AlocCSP::imprimir);
-			System.out.println("------------------------------");
-		}
+		return set;
 	}
 }
