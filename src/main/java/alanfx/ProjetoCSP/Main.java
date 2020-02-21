@@ -16,11 +16,14 @@ import aima.core.search.csp.CspSolver;
 import aima.core.search.csp.FlexibleBacktrackingSolver;
 import aima.core.search.csp.MinConflictsSolver;
 import aima.core.search.csp.Variable;
+import aima.core.search.framework.problem.Problem;
 import alanfx.ProjetoCSP.csp.AlocCSP;
 
 import alanfx.ProjetoCSP.csp.Disciplina;
 import alanfx.ProjetoCSP.csp.Professor;
+import alanfx.ProjetoCSP.persistencia.Persistencia;
 import alanfx.ProjetoCSP.restricoes.util.ValorAtribuido;
+import com.google.gson.Gson;
 
 public class Main {
 	
@@ -72,7 +75,13 @@ public class Main {
 		professores.add(ana);
 		
 		String algorit = "MinConflictsSolver"; //Exemplo algoritmo selecionado
-		
+
+		List<Disciplina> list = new Persistencia().getDisciplinasFromJson();
+		if (!list.isEmpty())
+		for (Disciplina dis : list){
+			System.out.println(dis.getNome());
+		}
+
 		variaveis = AlocCSP.criarVariaveis(disciplinas);
 		valores = AlocCSP.createValues(AlocCSP.criarProfessores(professores), AlocCSP.aulas);
 		CspListener.StepCounter<Variable, List<String>> stepCounter = new CspListener.StepCounter<>();

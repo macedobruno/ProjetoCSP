@@ -29,7 +29,7 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 	public static final List<String> aulas = new ArrayList<>(
 		Arrays.asList("SEG17","TER17","QUA17","QUI17","SEX17",
 					  "SEG19","TER19","QUA19","QUI19","SEX19",
-					  "SEG21","TER21","QUA21","QUI21","SEX21"));;
+					  "SEG21","TER21","QUA21","QUI21","SEX21"));
 
 	public AlocCSP(List<Disciplina> disciplinas, 
 			 	   List<Professor> professores,
