@@ -40,7 +40,7 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 
 	public AlocCSP() {
 		super(variaveis);
-		profs = new ArrayList<>(Arrays.asList("Prof1","Prof2","Prof3","Prof4", "semProf")); 
+		profs = new ArrayList<>(Arrays.asList("Prof1","Prof2","Prof3","Prof4","semProf")); 
 
 		Domain<List<String>> domain = new Domain<>(createValues(profs, aulas));
 		for (Variable var : getVariables())
@@ -50,7 +50,7 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 		preferencias.put("Prof1", Arrays.asList(SD1, SD2, IA1, IA2));
 		preferencias.put("Prof2", Arrays.asList(SD1, SD2));
 		preferencias.put("Prof3", Arrays.asList(SD1, SD2, ESII1, ESII2, LR1));
-		preferencias.put("Prof4", Arrays.asList(SD1, SD2));
+//		preferencias.put("Prof4", Arrays.asList(SD1, SD2));
 		
 		addAllHorarioDiferente(variaveis, 0); //add "HorarioDiferenteConstraint"
 		addAllProfessorDiferente(variaveisUnicas, 0); //add "ProfessorDiferenteConstraint"
@@ -73,7 +73,7 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 		addConstraint(new UnicoProfessor<>(SAD1, SAD2));
 		addConstraint(new UnicoProfessor<>(SD1, SD2));
 		
-//		addAllPriorizarProfessores(variaveis, profs); //AINDA NÃO TA FUNCIONANDO BEM
+		addAllPriorizarProfessores(variaveis, profs, preferencias);
 	}
 	
 	//Associa Todos os professores a cada um dos horarios
@@ -102,13 +102,13 @@ public class AlocCSP extends CSP<Variable, List<String>> {
 		if(j+1 < var.size()) addAllProfessorDiferente(var, j+1);
 	}
 	//Adiciona todas as restricoes do tipo "PriorizarProfessores"
-//	private void addAllPriorizarProfessores(List<Variable> vars, List<String> profs) {
-//		List<String> profs2 = new ArrayList<>(profs);
-//		profs2.remove("semProf");
-//		for(Variable var : vars) {
-//			addConstraint(new PriorizarProfessores<>(var, profs2));
-//		}
-//	}
+	private void addAllPriorizarProfessores(List<Variable> vars, List<String> profs, Map<String, List<Variable>> preferencias) {
+		List<String> profs2 = new ArrayList<>(profs);
+		profs2.remove("semProf");
+		for(Variable var : vars) {
+			addConstraint(new PriorizarProfessores<>(var, profs2, preferencias));
+		}
+	}
 	
     public static void imprimir(Assignment<Variable, List<String>> solution) {
     	LinkedHashMap<Variable, List<String>> assignment = solution.getVariableToValueMap();

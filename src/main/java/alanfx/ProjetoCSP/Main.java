@@ -22,12 +22,12 @@ public class Main {
 		CspListener.StepCounter<Variable, List<String>> stepCounter = new CspListener.StepCounter<>();
 		CspSolver<Variable, List<String>> solver;
 		
-		solver = new MinConflictsSolver<>(1000);
-		solver.addCspListener(stepCounter);
-		stepCounter.reset();
-		System.out.println("Alocar Professores (Minimum Conflicts)");
-		mostrarSolucoes(csp, solver);
-		System.out.println(stepCounter.getResults() + "\n");
+//		solver = new MinConflictsSolver<>(1000);
+//		solver.addCspListener(stepCounter);
+//		stepCounter.reset();
+//		System.out.println("Alocar Professores (Minimum Conflicts)");
+//		mostrarSolucoes(csp, solver);
+//		System.out.println(stepCounter.getResults() + "\n");
 		
 		solver = new FlexibleBacktrackingSolver<Variable, List<String>>().setAll();
 		solver.addCspListener(stepCounter);
@@ -36,23 +36,23 @@ public class Main {
 		mostrarSolucoes(csp, solver);
 		System.out.println(stepCounter.getResults() + "\n");
 
-		solver = new FlexibleBacktrackingSolver<Variable, List<String>>().set(CspHeuristics.mrvDeg());
-		solver.addCspListener(stepCounter);
-		stepCounter.reset();
-		System.out.println("Alocar Professores (Backtracking + MRV & DEG)");
-		mostrarSolucoes(csp, solver);
-		System.out.println(stepCounter.getResults() + "\n");
+//		solver = new FlexibleBacktrackingSolver<Variable, List<String>>().set(CspHeuristics.mrvDeg());
+//		solver.addCspListener(stepCounter);
+//		stepCounter.reset();
+//		System.out.println("Alocar Professores (Backtracking + MRV & DEG)");
+//		mostrarSolucoes(csp, solver);
+//		System.out.println(stepCounter.getResults() + "\n");
 		
-		solver = new FlexibleBacktrackingSolver<>();
-		solver.addCspListener(stepCounter);
-		stepCounter.reset();
-		System.out.println("Alocar Professores (Backtracking)");
-		mostrarSolucoes(csp, solver);
-		System.out.println(stepCounter.getResults() + "\n");
+//		solver = new FlexibleBacktrackingSolver<>();
+//		solver.addCspListener(stepCounter);
+//		stepCounter.reset();
+//		System.out.println("Alocar Professores (Backtracking)");
+//		mostrarSolucoes(csp, solver);
+//		System.out.println(stepCounter.getResults() + "\n");
 	}
 	
 	private static void mostrarSolucoes(CSP<Variable, List<String>> csp, CspSolver<Variable, List<String>> solver){
-		int n = 2; //Número de resultados
+		int n = 4; //Número de resultados
 		Optional<Assignment<Variable, List<String>>> solution;
 		Set<Optional<Assignment<Variable, List<String>>>> set = new HashSet<>();
 		for(int i=0;i<n;i++) {

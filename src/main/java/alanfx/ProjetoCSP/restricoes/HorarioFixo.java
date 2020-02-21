@@ -8,7 +8,7 @@ import aima.core.search.csp.Constraint;
 import aima.core.search.csp.Variable;
 
 /**
- * Representa uma restrição unária que associa uma variável a um horário.
+ * Representa uma restrição unária que associa uma variável a um horario.
  * 
  */
 public class HorarioFixo<VAR extends Variable, VAL> implements Constraint<VAR, List<String>> {
@@ -32,6 +32,6 @@ public class HorarioFixo<VAR extends Variable, VAL> implements Constraint<VAR, L
 	@Override
 	public boolean isSatisfiedWith(Assignment<VAR, List<String>> assignment) {
 		List<String> value = assignment.getValue(var);
-		return value.get(0) == val;
+		return value.get(0) == val;// Verifica se um valor especifico foi atribuido a variavel atual
 	}
 }

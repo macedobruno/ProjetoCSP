@@ -35,7 +35,7 @@ public class ProfessorDiferente<VAR extends Variable, VAL> implements Constraint
 		List<String> value1 = assignment.getValue(var1);
 		List<String> value2 = assignment.getValue(var2);
 		if(value1 == null || value2 == null) return true;
-		if(value1.get(1).equals("semProf")) return true;
+		if(value1.get(1).equals("semProf")) return true; //"semProf" poderá ser atribuida a mais de uma disciplina se precisar
 		return !value1.get(1).equals(value2.get(1));
 	}
 }
